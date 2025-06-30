@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.pyc
+
+# Django
+*.log
+db.sqlite3
+
+# Environment
+.env
+venv/
+
+# Media files
+/media/
+
+#IDE
+/vscode/
+# Jupyter Notebook
+.ipynb_checkpoints/
+# PyCharm
+.idea/
+
+#os
+.DS_Store
+Thumbs.db
+# Coverage reports
+.coverage
+# Build directories
+build/
+dist/
+# Cython debug symbols
+cython_debug/
+# Local settings
+local_settings.py
+# Static files
+staticfiles/
+# Temporary files
+*.tmp
+# Backup files
+*.bak
+# Test files
+test_*.py
+# Pytest cache
+.pytest_cache/
+# MyPy cache
+.mypy_cache/
+# Sphinx documentation
+docs/_build/
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+# Pytest HTML reports
+*.html
+# Coverage XML reports 
+
