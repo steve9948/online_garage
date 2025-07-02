@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,7 +32,7 @@ environ.Env.read_env(BASE_DIR / '.env')
 # ALLOWED_HOSTS = []
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
 
 
 # Application definition
@@ -93,18 +94,23 @@ WSGI_APPLICATION = 'online_garage.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': env('DB_HOST', default='localhost'),
-        'PORT': env('DB_PORT', default='5432'),
+    # Parse DB url automatically
+     'default': env.db(),
+         
+    #      {
+    # #     'ENGINE': 'django.db.backends.sqlite3',
+    # #     'NAME': BASE_DIR / 'db.sqlite3',
+    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #     'NAME': env('DB_NAME'),
+    #     'USER': env('DB_USER'),
+    #     'PASSWORD': env('DB_PASSWORD'),
+    #     'HOST': env('DB_HOST', default='localhost'),
+    #     'PORT': env('DB_PORT', default='5432'),
         
-    }
+    # }
 }
+
+DATABASES ['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 
 # Password validation
