@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from .models import (
     Garage, Part, Review, ForumThread, ForumPost, Service, GarageService
 )
+from django.db.models import Avg
+# from django.contrib.gis.geos import Point
+# # Assuming the models are defined in the same app as serializers.py
+# from django.contrib.gis.db import models as gis_models
+# from django.utils.translation import gettext_lazy as _
+# # Serializers for the models in the online garage application
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+# from decouple import config
 import environ
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -66,6 +68,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -95,7 +98,10 @@ WSGI_APPLICATION = 'online_garage.wsgi.application'
 
 DATABASES = {
     # Parse DB url automatically
-     'default': env.db(),
+     'default': env.db_url(
+         'DATABASE_URL',
+         engine='django.contrib.gis.db.backends.postgis'  # Use PostGIS for GIS support
+         )
          
     #      {
     # #     'ENGINE': 'django.db.backends.sqlite3',
@@ -110,7 +116,7 @@ DATABASES = {
     # }
 }
 
-DATABASES ['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+# DATABASES ['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 
 # Password validation
@@ -165,8 +171,21 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.TokenAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticatedOrReadOnly',)
 }
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = False
+
+# Allauth settings
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # We don't use a username
+ACCOUNT_AUTHENTICATION_METHOD = 'email'   # Login with email
+ACCOUNT_EMAIL_REQUIRED = True             # Email is required
+ACCOUNT_UNIQUE_EMAIL = True               # Each email must be unique
+ACCOUNT_USERNAME_REQUIRED = False         # Username is not required
+ACCOUNT_EMAIL_VERIFICATION = 'optional'   # Or 'mandatory' or 'none'
+
+# ACCOUNT_AUTHENTICATION_METHOD = None
+# ACCOUNT_LOGIN_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_UNIQUE_EMAIL = True
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+# SITE_ID = 1
+# Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # For development
