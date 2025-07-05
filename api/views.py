@@ -13,6 +13,16 @@ from .serializers import (
     GarageSerializer, PartSerializer, ReviewSerializer, ForumThreadSerializer
 )
 from .permissions import IsOwnerOrReadOnly
+from dj_rest_auth.views import LoginView as RestAuthLoginView
+from .serializers import CustomLoginSerializer
+
+
+class CustomLoginView(RestAuthLoginView):
+    """
+    A custom login view that is guaranteed to use our
+    CustomLoginSerializer.
+    """
+    serializer_class = CustomLoginSerializer
 
 # --- HEAVY MODIFICATION: Change GarageViewSet to a full ModelViewSet ---
 class GarageViewSet(viewsets.ModelViewSet):

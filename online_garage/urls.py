@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from api.views import CustomLoginView
 # from django.views.generic import RedirectView
 # from django.views.i18n import JavaScriptCatalog
 # from django.conf.urls.i18n import i18n_patterns
@@ -26,6 +27,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/auth/login/', CustomLoginView.as_view(), name='rest_login'),
     path('api/auth/', include('dj_rest_auth.urls')),
     path('api/auth/registration/', include('dj_rest_auth.registration.urls')),
     path('api/', include('api.urls')),

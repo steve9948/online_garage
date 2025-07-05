@@ -96,6 +96,25 @@ WSGI_APPLICATION = 'online_garage.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+
+# # --- Database Configuration (Robust for Testing) ---
+# # First, parse the database URL from the .env file into a dictionary
+# db_config = env.db_url(
+#     'DATABASE_URL',
+#     engine='django.contrib.gis.db.backends.postgis'
+# )
+
+# # Now, manually add the TEST settings to this configuration dictionary
+# db_config['TEST'] = {
+#     'NAME': db_config.get('NAME'),  # Use the same name, Django will prefix it with 'test_'
+#     'TEMPLATE': 'template_postgis', # Tells Django to copy our pre-configured template
+# }
+
+# # Finally, assign the fully constructed dictionary to the DATABASES setting
+# DATABASES = {
+#     'default': db_config
+# }
+
 DATABASES = {
     # Parse DB url automatically
      'default': env.db_url(
@@ -103,20 +122,12 @@ DATABASES = {
          engine='django.contrib.gis.db.backends.postgis'  # Use PostGIS for GIS support
          )
          
-    #      {
-    # #     'ENGINE': 'django.db.backends.sqlite3',
-    # #     'NAME': BASE_DIR / 'db.sqlite3',
-    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #     'NAME': env('DB_NAME'),
-    #     'USER': env('DB_USER'),
-    #     'PASSWORD': env('DB_PASSWORD'),
-    #     'HOST': env('DB_HOST', default='localhost'),
-    #     'PORT': env('DB_PORT', default='5432'),
-        
-    # }
 }
 
-# DATABASES ['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
+#Extension template database
+DATABASES ['default']['TEST'] = {
+    'TEMPLATE': 'template_postgis',  # Use a temporary database for tests
+    }# DATABASES ['default']['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 
 # Password validation
@@ -172,6 +183,19 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticatedOrReadOnly',)
 }
 
+#All auth settings
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # Default backend ie username/password login
+    'allauth.account.auth_backends.AuthenticationBackend',  # Allauth  backend ie email/password login
+)
+
+
+# Authentication settings
+
+# REST_AUTH = {
+#     'LOGIN_SERIALIZER': 'api.serializers.CustomLoginSerializer',  # Use our custom login serializer
+# }
+
 # Allauth settings
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None  # We don't use a username
 ACCOUNT_AUTHENTICATION_METHOD = 'email'   # Login with email
@@ -186,6 +210,9 @@ ACCOUNT_EMAIL_VERIFICATION = 'optional'   # Or 'mandatory' or 'none'
 # ACCOUNT_UNIQUE_EMAIL = True
 # ACCOUNT_USERNAME_REQUIRED = False
 # ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-# SITE_ID = 1
+
+# SITE_ID = 1  # Required for allauth to work properly
+# ACCOUNT_EMAIL_VERIFICATION = 'optional'  # Or 'mandatory' or 'none'
+SITE_ID = 1
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # For development

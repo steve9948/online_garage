@@ -1,11 +1,56 @@
-from rest_framework import serializers
+from dj_rest_auth.serializers import LoginSerializer as RestAuthLoginSerializer
 from django.contrib.auth.models import User
 from django.db import transaction, models
 from .models import (
     Garage, Part, Review, ForumThread, ForumPost, Service, GarageService
 )
 from .fields import CreatableSlugRelatedField  # <-- Import our new field
+from django.contrib.auth import authenticate
+from rest_framework import serializers
 
+class CustomLoginSerializer(serializers.Serializer):
+    """
+    A new, fully custom serializer for email-based login.
+    It does not inherit from the problematic dj-rest-auth serializer.
+    """
+    # Define the fields we expect to receive
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(
+        style={'input_type': 'password'},  # This helps the browsable API render a password field
+        trim_whitespace=False,
+        required=True
+    )
+
+    def validate(self, attrs):
+        """
+        This method is called to validate the input.
+        We will perform the authentication here.
+        """
+        # Get the email and password from the validated data
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        if email and password:
+            # Use Django's built-in authentication system.
+            # Because of our settings, this will correctly use the allauth backend
+            # which knows to check for an email and password.
+            user = authenticate(request=self.context.get('request'), email=email, password=password)
+
+            # If authentication fails, 'user' will be None
+            if not user:
+                # Raise a validation error, which will be sent to the client
+                msg = 'Unable to log in with provided credentials.'
+                raise serializers.ValidationError(msg, code='authorization')
+        else:
+            msg = 'Must include "email" and "password".'
+            raise serializers.ValidationError(msg, code='authorization')
+
+        # If authentication succeeds, we add the user object to the validated data.
+        # The view will use this to complete the login process.
+        attrs['user'] = user
+        return attrs
+    
+    
 # --- No changes to UserSerializer and ReviewSerializer ---
 class UserSerializer(serializers.ModelSerializer):
     class Meta: model = User; fields = ['id', 'username', 'email']
